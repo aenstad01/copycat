@@ -7,12 +7,13 @@ var currentTooltip = null;
 
 // Function to show a tooltip
 function showTooltip(element, message) {
-  // Remove the existing tooltip if there is one
+  // Remove the existing tooltip if there is one.
   if (currentTooltip) {
     document.body.removeChild(currentTooltip);
     currentTooltip = null;
   }
 
+  // Styling the tooltip that shows when a user clicks to copy
   var tooltip = document.createElement('div');
   tooltip.style.position = 'absolute';
   tooltip.style.background = 'black';
@@ -23,23 +24,31 @@ function showTooltip(element, message) {
   tooltip.style.zIndex = '1000';
   tooltip.textContent = message;
 
+  // Get the bounding rectangle of the element to position the tooltip
   var rect = element.getBoundingClientRect();
+  
+  // Set the top position of the tooltip to be 30px above the element
   tooltip.style.top = (rect.top + window.scrollY - 30) + 'px';
+  
+  // Center the tooltip horizontally relative to the element
   tooltip.style.left = (rect.left + window.scrollX + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
 
+  // Append the tooltip to the body of the document
   document.body.appendChild(tooltip);
   currentTooltip = tooltip;
 
+  // Set a timeout to remove the tooltip after 2 seconds
   setTimeout(function() {
     if (currentTooltip === tooltip) {
       document.body.removeChild(tooltip);
       currentTooltip = null;
     }
-  }, 2000); // Remove the tooltip after 2 seconds
+  }, 2000); 
 }
 
 document.addEventListener('click', function(event) {
   // Check if the clicked element or its ancestors have the class "table-scroller" or if it's an SVG text element
+  //"table-scroller" targets the data table in the GA4 reports library. 'text' targets the GA4 Explore report.
   var isWithinTargetArea = event.target.closest('.table-scroller') || event.target.tagName === 'text';
 
   if (!isWithinTargetArea) {
