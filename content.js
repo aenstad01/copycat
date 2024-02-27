@@ -86,7 +86,7 @@ function mainContentScriptFunction() {
         });
       }
     });
-
+  }
 // The conditional check should be placed outside the mainContentScriptFunction
 document.addEventListener('DOMContentLoaded', function() {
   chrome.storage.sync.get(['extensionADisabled'], function(result) {
