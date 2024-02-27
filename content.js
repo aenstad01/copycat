@@ -1,22 +1,14 @@
 console.log("copycat loaded");
 
-chrome.storage.onChanged.addListener(function(changes, area) {
-  if (area === 'sync' && changes.clickToCopy) {
-    // Detect if 'clickToCopy' was added, changed, or removed
-    const newValue = changes.clickToCopy.newValue;
-    const oldValue = changes.clickToCopy.oldValue;
-
-    console.log(`clickToCopy changed from ${oldValue} to ${newValue}`);
-
-    if (newValue) {
-      console.log("clickToCopy is enabled. Extension B functionality will be disabled.");
+chrome.storage.sync.get(['clickToCopy'], function(result) {
+    if (result.clickToCopy) {
+        console.log("clickToCopy is enabled. Extension B will not run.");
     } else {
-      console.log("clickToCopy is disabled or removed. Extension B functionality can proceed.");
-      mainContentScriptFunction(); 
+        // Your Extension B's main script or initialization code here
+        console.log("clickToCopy is not enabled or not set. Extension B can run.");
+        mainFunction(); // Replace mainFunction with the actual function that starts your extension's logic
     }
-  }
 });
-
 
 
 function mainContentScriptFunction() {
