@@ -1,10 +1,11 @@
 console.log("background.js loaded");
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
+    console.log("background storage check running");
     if (namespace === 'sync' && changes.clickToCopy) {
         // Access the new value of clickToCopy
         const newValue = changes.clickToCopy.newValue;
-
+        console.log(newValue);
         if (newValue) {
             console.log("clickToCopy is now enabled. Extension B should not run.");
             // Code to disable or stop Extension B's functionality
