@@ -1,3 +1,4 @@
+console.log("copycat loaded");
 function mainContentScriptFunction() {
   // Variable to store the previously copied element
   var prevCopiedElement = null;
