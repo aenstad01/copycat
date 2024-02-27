@@ -1,5 +1,6 @@
 console.log("copycat loaded");
 function mainContentScriptFunction() {
+  console.log("main script running")
   // Variable to store the previously copied element
   var prevCopiedElement = null;
 
@@ -48,6 +49,7 @@ function mainContentScriptFunction() {
 
 // The conditional check should be placed outside the mainContentScriptFunction
 chrome.storage.sync.get(['extensionADisabled'], function(result) {
+  console.log("chrome.storage.sync running");
   // If 'extensionADisabled' is not set, default to false (meaning Extension B is enabled by default)
   if (!(result.extensionADisabled === true)) {
     mainContentScriptFunction();
