@@ -1,14 +1,14 @@
 console.log("copycat loaded");
 
-chrome.storage.sync.get(['clickToCopy'], function(result) {
-    if (result.clickToCopy) {
-        console.log("clickToCopy is enabled. Extension B will not run.");
-    } else {
-        // Your Extension B's main script or initialization code here
-        console.log("clickToCopy is not enabled or not set. Extension B can run.");
-        mainContentScriptFunction(); // Replace mainFunction with the actual function that starts your extension's logic
-    }
-});
+// chrome.storage.sync.get(['clickToCopy'], function(result) {
+//     if (result.clickToCopy) {
+//         console.log("clickToCopy is enabled. Extension B will not run.");
+//     } else {
+//         // Your Extension B's main script or initialization code here
+//         console.log("clickToCopy is not enabled or not set. Extension B can run.");
+//         mainContentScriptFunction(); // Replace mainFunction with the actual function that starts your extension's logic
+//     }
+// });
 
 
 function mainContentScriptFunction() {
