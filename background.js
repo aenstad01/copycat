@@ -1,18 +1,10 @@
-chrome.runtime.onInstalled.addListener(() => {
-  checkAndDisableIfExtensionAExists();
-});
+chrome.runtime.onInstalled.addListener(initializeExtension);
+chrome.runtime.onStartup.addListener(initializeExtension);
 
-chrome.runtime.onStartup.addListener(() => {
-  checkAndDisableIfExtensionAExists();
-});
-
-function checkAndDisableIfExtensionAExists() {
+function initializeExtension() {
   chrome.management.getAll(extensions => {
-    const extensionA = extensions.find(extension => extension.name === "Your Extension A Name" && extension.enabled);
-    if (extensionA) {
-      console.log("Extension A is enabled. Disabling Extension B.");
-      // Optionally, disable Extension B functionality here
-      // For example, set a global flag to prevent running core functionality
-    }
+    const extensionA = extensions.find(extension => extension.name === "Extension A Name" && extension.enabled);
+    // Set 'ExtensionADisabled' in storage to true if Extension A is found and enabled, false otherwise.
+    chrome.storage.sync.set({ 'extensionADisabled': !!extensionA });
   });
 }
