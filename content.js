@@ -51,6 +51,6 @@ chrome.storage.sync.get(['extensionADisabled'], function(result) {
   if (!result.extensionADisabled) {
     mainContentScriptFunction();
   } else {
-    console.log('Extension A is active. Extension B's content script will not execute.');
+    console.log("Extension A is active. Extension B's content script will not execute.");
   }
 });
