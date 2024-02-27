@@ -10,22 +10,22 @@ console.log("copycat loaded");
 //     }
 // });
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    console.log("background storage check running");
-    if (namespace === 'sync' && changes.clickToCopy) {
-        // Access the new value of clickToCopy
-        const newValue = changes.clickToCopy.newValue;
-        console.log(newValue);
-        if (newValue) {
-            console.log("clickToCopy is now enabled. Extension B should not run.");
+const delayTime = 5000; // For example, a 1-second delay
+
+setTimeout(() => {
+    chrome.storage.sync.get(['clickToCopy'], function(result) {
+        if (result.clickToCopy) {
+            console.log("clickToCopy is enabled. Extension B will not run.");
             // Code to disable or stop Extension B's functionality
         } else {
-            console.log("clickToCopy is not enabled. Extension B can run.");
-            // Code to enable or proceed with Extension B's functionality
+            console.log("clickToCopy is not enabled or not set. Extension B can run.");
+            // Your Extension B's main script or initialization code here
             mainContentScriptFunction(); // Ensure this function is defined and implements your main script logic
         }
-    }
-});
+    });
+}, delayTime);
+
+
 
 
 function mainContentScriptFunction() {
