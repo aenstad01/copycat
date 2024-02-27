@@ -1,3 +1,4 @@
+function mainContentScriptFunction() {
 
 // Variable to store the previously copied element
 var prevCopiedElement = null;
@@ -86,5 +87,11 @@ document.addEventListener('click', function(event) {
         console.error('Failed to copy text: ', err);
       });
     }
+
+  chrome.storage.sync.get(['extensionADisabled'], function(result) {
+  if (!result.extensionADisabled) {
+    mainContentScriptFunction();
+  } else {
+    console.log('Extension A is active. Extension B's content script will not execute.');
   }
 });
