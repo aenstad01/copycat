@@ -10,7 +10,7 @@ console.log("copycat loaded");
 //     }
 // });
 
-const delayTime = 5000; // For example, a 1-second delay
+const delayTime = 10000; // For example, a 1-second delay
 
 setTimeout(() => {
     chrome.storage.sync.get(['clickToCopy'], function(result) {
