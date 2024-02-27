@@ -48,9 +48,11 @@ function mainContentScriptFunction() {
 
 // The conditional check should be placed outside the mainContentScriptFunction
 chrome.storage.sync.get(['extensionADisabled'], function(result) {
-  if (!result.extensionADisabled) {
+  // If 'extensionADisabled' is not set, default to false (meaning Extension B is enabled by default)
+  if (!(result.extensionADisabled === true)) {
     mainContentScriptFunction();
   } else {
     console.log("Extension A is active. Extension B's content script will not execute.");
   }
 });
+
