@@ -6,7 +6,7 @@ chrome.storage.sync.get(['clickToCopy'], function(result) {
     } else {
         // Your Extension B's main script or initialization code here
         console.log("clickToCopy is not enabled or not set. Extension B can run.");
-        mainFunction(); // Replace mainFunction with the actual function that starts your extension's logic
+        mainContentScriptFunction(); // Replace mainFunction with the actual function that starts your extension's logic
     }
 });
 
