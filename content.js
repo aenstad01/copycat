@@ -1,111 +1,109 @@
-console.log("copycat loaded");
+(function() {
 
-// chrome.storage.sync.get(['clickToCopy'], function(result) {
-//     if (result.clickToCopy) {
-//         console.log("clickToCopy is enabled. Extension B will not run.");
-//     } else {
-//         // Your Extension B's main script or initialization code here
-//         console.log("clickToCopy is not enabled or not set. Extension B can run.");
-//         mainContentScriptFunction(); // Replace mainFunction with the actual function that starts your extension's logic
-//     }
-// });
-
-const delayTime = 10000; // For example, a 1-second delay
-
-setTimeout(() => {
-    chrome.storage.sync.get(['clickToCopy'], function(result) {
-        if (result.clickToCopy) {
-            console.log("clickToCopy is enabled. Extension B will not run.");
-            // Code to disable or stop Extension B's functionality
-        } else {
-            console.log("clickToCopy is not enabled or not set. Extension B can run.");
-            // Your Extension B's main script or initialization code here
-            mainContentScriptFunction(); // Ensure this function is defined and implements your main script logic
-        }
+  let currentTooltip = null;
+  let isCopyValuesEnabled = true; // Default state
+  
+  // Function to load and set the initial state
+  function loadInitialEnabledState() {
+    chrome.storage.sync.get('copyValuesEnabled', function(data) {
+      isCopyValuesEnabled = data.copyValuesEnabled !== undefined ? data.copyValuesEnabled : true;
     });
-}, delayTime);
-
-
-
-
-function mainContentScriptFunction() {
-  console.log("main script running");
-
-  // Variable to store the previously copied element
-  var prevCopiedElement = null;
-
-  // Variable to store the current tooltip
-  var currentTooltip = null;
-
-  // Function to show a tooltip
-  function showTooltip(element, message) {
-    // Remove the existing tooltip if there is one
-    if (currentTooltip) {
-      document.body.removeChild(currentTooltip);
-      currentTooltip = null;
-    }
-
-    // Styling the tooltip
-    var tooltip = document.createElement('div');
-    tooltip.style.position = 'absolute';
-    tooltip.style.background = 'black';
-    tooltip.style.color = 'white';
-    tooltip.style.padding = '5px';
-    tooltip.style.borderRadius = '5px';
-    tooltip.style.fontSize = '12px';
-    tooltip.style.zIndex = '1000';
-    tooltip.textContent = message;
-
-    // Positioning the tooltip
-    var rect = element.getBoundingClientRect();
-    tooltip.style.top = (rect.top + window.scrollY - 30) + 'px';
-    tooltip.style.left = (rect.left + window.scrollX + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
-
-    // Append and auto-remove the tooltip
-    document.body.appendChild(tooltip);
-    currentTooltip = tooltip;
-    setTimeout(function() {
-      if (currentTooltip === tooltip) {
-        document.body.removeChild(tooltip);
-        currentTooltip = null;
-      }
-    }, 2000);
   }
-
-  // Event listener for clicks
-  document.addEventListener('click', function(event) {
-    var isWithinTargetArea = event.target.closest('.table-scroller') || event.target.tagName === 'text';
-
-    if (!isWithinTargetArea) {
-      // If the click is outside of the target areas, return and do nothing
-      return;
-    }
-
-    event.preventDefault(); // Prevent the default action to avoid navigating away or other undesired behavior
-
-    var selection = window.getSelection();
-    var text = selection.toString();
-
-    if (text.length > 0) {
-      navigator.clipboard.writeText(text).then(function() {
-        console.log(text);
-        var element = selection.anchorNode.tagName === 'text' ? selection.anchorNode : selection.anchorNode.parentElement;
-        showTooltip(element, 'Copied!');
-      }).catch(function(err) {
-        console.error('Failed to copy text: ', err);
-      });
-    } else {
-      var textToCopy = event.target.textContent || event.target.value;
-      if (textToCopy) {
-        navigator.clipboard.writeText(textToCopy).then(function() {
-          console.log('Text copied to clipboard');
-          showTooltip(event.target, 'Copied!');
-        }).catch(function(err) {
-          console.error('Failed to copy text: ', err);
-        });
+  
+  // Call this function as soon as the script loads
+  loadInitialEnabledState();
+  
+  // Function to listen for changes in the enabled state
+  function listenForEnabledStateChanges() {
+    chrome.storage.onChanged.addListener(function(changes, namespace) {
+      if (changes.copyValuesEnabled) {
+        isCopyValuesEnabled = changes.copyValuesEnabled.newValue;
       }
-    }
-  }); // Correctly closes the 'click' event listener
-} // Correctly closes the mainContentScriptFunction
-
-
+    });
+  }
+  
+  // Call this function as soon as the script loads
+  listenForEnabledStateChanges();
+  
+  function removeCurrentTooltip() {
+      if (currentTooltip) {
+          document.body.removeChild(currentTooltip);
+          currentTooltip = null;
+      }
+  }
+  
+  document.addEventListener('click', function(e) {
+      // Check if the script is enabled before executing
+      if (!isCopyValuesEnabled) return;
+      // Ignore clicks on rows with the class 'adv-table-header-row'
+      if (e.target.closest('.adv-table-header-row')) {
+          return;
+      }
+      
+      let targetElement = e.target;
+      
+      // Special handling for SVG <text> elements within <g>
+      if (targetElement.tagName.toLowerCase() === 'text' && 
+          (targetElement.closest('g.header-value') || targetElement.closest('g.cell'))) {
+          // Directly use the <text> element's content
+          copyTextContent(targetElement.textContent);
+          e.preventDefault();
+          return;
+      }
+      
+      // Navigate up to the relevant parent if the click isn't directly on a target element
+      if (!targetElement.matches('.mdc-data-table__header-cell, td')) {
+          targetElement = targetElement.closest('.mdc-data-table__header-cell, td');
+      }
+  
+      if (targetElement) {
+          let valueToCopy = getText(targetElement).trim();
+          if (valueToCopy.length > 0) {
+              copyTextContent(valueToCopy);
+              e.preventDefault();
+          }
+      }
+  }, false);
+  
+  function getText(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+          return node.nodeValue;
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.matches('.percentage-value, .summary-text')) {
+              return ''; // Ignore these elements
+          }
+          return Array.from(node.childNodes).map(getText).join('');
+      }
+      return '';
+  }
+  
+  function copyTextContent(text) {
+      navigator.clipboard.writeText(text).then(function() {
+          showTooltip('Copied: ' + text);
+      }).catch(function(error) {
+          console.error('Could not copy text: ', error);
+      });
+  }
+  
+  function showTooltip(message) {
+      removeCurrentTooltip();
+      const tooltip = document.createElement('div');
+      tooltip.textContent = message;
+      tooltip.style.position = 'fixed'; // Use 'fixed' to position relative to the viewport
+      tooltip.style.left = '50%'; // Center horizontally in the viewport
+      tooltip.style.bottom = '40px'; // Position 20px from the bottom of the viewport
+      tooltip.style.transform = 'translateX(-50%)'; // Shift it to the left by half its width to truly center it
+      tooltip.style.backgroundColor = 'black';
+      tooltip.style.color = 'white';
+      tooltip.style.padding = '10px';
+      tooltip.style.borderRadius = '5px';
+      tooltip.style.zIndex = '1000';
+      tooltip.style.opacity = '1';
+      tooltip.style.transition = 'opacity 0.3s ease-out';
+  
+      document.body.appendChild(tooltip);
+      currentTooltip = tooltip;
+      setTimeout(removeCurrentTooltip, 3000); // Adjusted to 3 seconds for visibility
+  }
+  
+  })();
