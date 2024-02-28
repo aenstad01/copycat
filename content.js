@@ -74,7 +74,7 @@
       tooltip.style.padding = '10px';
       tooltip.style.borderRadius = '5px';
       tooltip.style.zIndex = '1000';
-      tooltip.style.opacity = '.5';
+      tooltip.style.opacity = '1';
       tooltip.style.transition = 'opacity 0.3s ease-out';
   
       document.body.appendChild(tooltip);
