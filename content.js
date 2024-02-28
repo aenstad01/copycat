@@ -1,4 +1,5 @@
 (function() {
+  console.log("Copycat running");
 
   let currentTooltip = null;
   let isCopyValuesEnabled = true; // Default state
@@ -58,6 +59,7 @@
   
       if (targetElement) {
           let valueToCopy = getText(targetElement).trim();
+          console.log(valueToCopy);
           if (valueToCopy.length > 0) {
               copyTextContent(valueToCopy);
               e.preventDefault();
