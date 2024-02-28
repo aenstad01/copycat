@@ -1,12 +1,9 @@
 {
     "manifest_version": 3,
     "name": "GA4 Copy Cat — Copy/Paste in GA4",
-    "version": "1.4",
+    "version": "1.5",
     "description": "Copy text and numbers within the GA4 Reports Library and GA4 Explorations with a single click.",
-    "permissions": ["clipboardWrite", "management", "storage", "activeTab"],
-    "background": {
-        "service_worker": "background.js"
-      },
+    "permissions": ["clipboardWrite"],
     "content_scripts": [
       {
         "matches": ["https://analytics.google.com/*"],
