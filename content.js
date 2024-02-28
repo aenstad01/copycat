@@ -1,30 +1,6 @@
 (function() {
-  console.log("Copycat running");
-
+  console.log("copycat running");
   let currentTooltip = null;
-  let isCopyValuesEnabled = true; // Default state
-  
-  // Function to load and set the initial state
-  function loadInitialEnabledState() {
-    chrome.storage.sync.get('copyValuesEnabled', function(data) {
-      isCopyValuesEnabled = data.copyValuesEnabled !== undefined ? data.copyValuesEnabled : true;
-    });
-  }
-  
-  // Call this function as soon as the script loads
-  loadInitialEnabledState();
-  
-  // Function to listen for changes in the enabled state
-  function listenForEnabledStateChanges() {
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
-      if (changes.copyValuesEnabled) {
-        isCopyValuesEnabled = changes.copyValuesEnabled.newValue;
-      }
-    });
-  }
-  
-  // Call this function as soon as the script loads
-  listenForEnabledStateChanges();
   
   function removeCurrentTooltip() {
       if (currentTooltip) {
@@ -34,8 +10,6 @@
   }
   
   document.addEventListener('click', function(e) {
-      // Check if the script is enabled before executing
-      if (!isCopyValuesEnabled) return;
       // Ignore clicks on rows with the class 'adv-table-header-row'
       if (e.target.closest('.adv-table-header-row')) {
           return;
